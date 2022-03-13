@@ -3,6 +3,7 @@ package logic
 import (
 	"NetLinkOld/dao/mysql"
 	"NetLinkOld/models"
+	"NetLinkOld/pkg/uuid"
 	"go.uber.org/zap"
 )
 
@@ -24,4 +25,15 @@ func GetQuestionList(page int, amount int) (data []*models.QueList, err error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func SendQuestion(que *models.Question) (err error) {
+	que.CommunityID = 1
+	que.ID, err = uuid.Getuuid()
+	err = mysql.SendQuestion(que)
+	if err != nil {
+		zap.L().Error("mysql.SendQuestion(que) err:", zap.Error(err))
+		return err
+	}
+	return nil
 }

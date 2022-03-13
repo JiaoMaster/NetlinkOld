@@ -9,8 +9,7 @@ import (
 )
 
 func Init() (err error) {
-	viper.SetConfigFile("config.yaml") // 指定配置文件
-	viper.AddConfigPath("./")          // 指定查找配置文件的路径
+	viper.SetConfigFile("./conf/config.yaml") // 指定查找配置文件的路径
 	err = viper.ReadInConfig()         // 读取配置信息
 	if err != nil {
 		// 读取配置信息失败

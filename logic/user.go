@@ -3,7 +3,6 @@ package logic
 import (
 	"NetLinkOld/dao/mysql"
 	"NetLinkOld/models"
-	"NetLinkOld/pkg/jwt"
 	"NetLinkOld/pkg/uuid"
 	"fmt"
 	"github.com/pkg/errors"
@@ -31,9 +30,8 @@ func Login(data *models.UserSignUp) (string, error) {
 		Username: data.Username,
 		Password: data.Password,
 	}
-	fmt.Println(user)
 	//操作数据库校验登陆
-	err := mysql.Login(user)
+	token, err := mysql.Login(user)
 	if err != nil {
 		if err.Error() == "密码错误" {
 			return "", errors.New("密码错误")
@@ -41,7 +39,7 @@ func Login(data *models.UserSignUp) (string, error) {
 		return "", err
 	}
 	//生成token
-	token, err := jwt.GenToken(user.Username)
+	fmt.Println(data.Username)
 	if err != nil {
 		return "", err
 	}

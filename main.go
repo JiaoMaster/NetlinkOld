@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
-
 	"go.uber.org/zap"
 )
 

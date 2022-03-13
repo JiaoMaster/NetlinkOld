@@ -63,3 +63,32 @@ func GetQuestionList(c *gin.Context) {
 	})
 	return
 }
+
+func SendQuestion(c *gin.Context) {
+	//绑定
+	que := new(models.Question)
+	var err error
+	err = c.ShouldBindJSON(&que)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	//业务
+	err = logic.SendQuestion(que)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	//返回响应
+	c.JSON(http.StatusOK, gin.H{
+		"code": 202,
+		"msg":  "ok",
+	})
+	return
+}

@@ -7,7 +7,7 @@ import (
 )
 
 func GetCurrentUser(c *gin.Context) (string, error) {
-	data, ok := c.Get("username")
+	data, ok := c.Get("UserName")
 	if !ok {
 		zap.L().Error("GetCurrentUser err...", zap.Error(errors.New("用户获取失败")))
 		return "", errors.New("用户获取失败")
