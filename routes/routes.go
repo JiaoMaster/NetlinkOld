@@ -4,7 +4,6 @@ import (
 	"NetLinkOld/controler"
 	"NetLinkOld/logger"
 	"NetLinkOld/middleware"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -33,13 +32,15 @@ func Setup() *gin.Engine {
 	quegroup.POST("/get_question_detail/:id", controler.GetQuestionDetail)
 	quegroup.POST("/get_question_list/:page/:amount", controler.GetQuestionList)
 
+	comgroup := apigroup.Group("/commit")
+	comgroup.POST("/send_commit", middleware.JWTAuthMiddleware(), controler.SendCommit)
+	comgroup.POST("/get_commit/:post_id", controler.GetCommit)
 	return r
 }
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
-		fmt.Println(method)
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token")
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE")
