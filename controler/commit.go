@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
-	"strconv"
 )
 
 func SendCommit(c *gin.Context) {
@@ -20,6 +19,7 @@ func SendCommit(c *gin.Context) {
 			"code": 404,
 			"err":  err,
 		})
+		return
 	}
 	err = logic.SendCommit(com)
 	if err != nil {
@@ -28,6 +28,7 @@ func SendCommit(c *gin.Context) {
 			"code": 404,
 			"err":  err,
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
@@ -36,22 +37,16 @@ func SendCommit(c *gin.Context) {
 }
 
 func GetCommit(c *gin.Context) {
-	PostId := c.Param("post_id")
-	pId, err := strconv.Atoi(PostId)
-	if err != nil {
-		zap.L().Error("controler.GetCommit strconv.Atoi err", zap.Error(err))
-		c.JSON(http.StatusOK, gin.H{
-			"code": 404,
-			"err":  err,
-		})
-	}
+	pId := c.Param("post_id")
 	com, err := logic.GetCommit(pId)
+
 	if err != nil {
 		zap.L().Error("controler.GetCommit logic.GetCommit(pId) err", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
 			"err":  err,
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,

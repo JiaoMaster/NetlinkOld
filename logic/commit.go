@@ -10,7 +10,7 @@ func SendCommit(com *models.Commit) error {
 	return err
 }
 
-func GetCommit(Pid int) ([]*models.Commit, error) {
+func GetCommit(Pid string) ([]*models.Commit, error) {
 	com, err := mysql.GetCommit(Pid)
 	return com, err
 }
