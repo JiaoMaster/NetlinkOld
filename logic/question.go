@@ -17,9 +17,9 @@ func GetQuestionDetail(Qid string) (que *models.Question, err error) {
 	return que, nil
 }
 
-func GetQuestionList(page int, amount int) (data []*models.QueList, err error) {
+func GetQuestionList(page int, amount int, ch *models.QueCh) (data []*models.QueList, err error) {
 	//查库
-	data, err = mysql.GetQuestionList(page, amount)
+	data, err = mysql.GetQuestionList(page, amount, ch)
 	if err != nil {
 		zap.L().Error("mysql.GetQuestionList(page, amount) err ", zap.Error(err))
 		return nil, err
@@ -28,7 +28,6 @@ func GetQuestionList(page int, amount int) (data []*models.QueList, err error) {
 }
 
 func SendQuestion(que *models.Question) (err error) {
-	que.CommunityID = 1
 	que.ID, err = uuid.Getuuid()
 	err = mysql.SendQuestion(que)
 	if err != nil {

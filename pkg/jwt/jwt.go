@@ -14,7 +14,7 @@ type MyClaims struct {
 
 var TokenExpireDuration = time.Hour * 7200
 
-var MySecret = []byte("jiaomaster")
+var mySecret = []byte("jiaomaster")
 
 // GenToken 生成JWT
 func GenToken(userid int64, username string) (string, error) {
@@ -30,20 +30,21 @@ func GenToken(userid int64, username string) (string, error) {
 	// 使用指定的签名方法创建签名对象
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	// 使用指定的secret签名并获得完整的编码后的字符串token
-	return token.SignedString(MySecret)
+	return token.SignedString(mySecret)
 }
 
 // ParseToken 解析JWT
 func ParseToken(tokenString string) (*MyClaims, error) {
+	var mc = new(MyClaims)
 	// 解析token
-	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (i interface{}, err error) {
-		return MySecret, nil
+	token, err := jwt.ParseWithClaims(tokenString, mc, func(token *jwt.Token) (i interface{}, err error) {
+		return mySecret, nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid { // 校验token
-		return claims, nil
+	if token.Valid { // 校验token
+		return mc, nil
 	}
 	return nil, errors.New("invalid token")
 }

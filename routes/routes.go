@@ -27,8 +27,9 @@ func Setup() *gin.Engine {
 	usergroup.POST("/put_user_info", controler.PutUserInfo)
 
 	//题目路由组
+
 	quegroup := apigroup.Group("/question")
-	quegroup.POST("/send_question", controler.SendQuestion)
+	quegroup.POST("/send_question", middleware.JWTAuthMiddleware(), controler.SendQuestion)
 	quegroup.POST("/get_question_detail/:id", controler.GetQuestionDetail)
 	quegroup.POST("/get_question_list/:page/:amount", controler.GetQuestionList)
 

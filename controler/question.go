@@ -38,6 +38,8 @@ func GetQuestionList(c *gin.Context) {
 	amount := c.Param("amount")
 	Page, err := strconv.Atoi(page)
 	Amount, err := strconv.Atoi(amount)
+	queCh := new(models.QueCh)
+	err = c.ShouldBindJSON(queCh)
 	if err != nil {
 		zap.L().Error(" GetQuestionList 转化失败", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
@@ -47,7 +49,7 @@ func GetQuestionList(c *gin.Context) {
 		return
 	}
 	//逻辑层处理
-	data, err := logic.GetQuestionList(Page, Amount)
+	data, err := logic.GetQuestionList(Page, Amount, queCh)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -57,7 +59,7 @@ func GetQuestionList(c *gin.Context) {
 	}
 	//返回响应
 	c.JSON(http.StatusOK, gin.H{
-		"code":          202,
+
 		"msg":           "ok",
 		"question_list": data,
 	})
@@ -69,6 +71,7 @@ func SendQuestion(c *gin.Context) {
 	que := new(models.Question)
 	var err error
 	err = c.ShouldBindJSON(&que)
+	que.UserName, err = GetCurrentUser(c)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -76,6 +79,7 @@ func SendQuestion(c *gin.Context) {
 		})
 		return
 	}
+
 	//业务
 	err = logic.SendQuestion(que)
 	if err != nil {

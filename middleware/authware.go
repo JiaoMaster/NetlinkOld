@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"NetLinkOld/pkg/jwt"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -46,7 +45,6 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 		username := mc.Username
 		// 将当前请求的user信息保存到请求的上下文c上
-		fmt.Println(username)
 		c.Set("UserName", username)
 		c.Next()
 	}
