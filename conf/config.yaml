@@ -3,8 +3,8 @@ app:
   mode: "dev"
   port: 8080
   TokenExpireDuration: 720
-
-
+  version: "1.0.0"
+  apkurl: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-a933095d-bea3-4928-8f0f-32b5379c7772/e36ae07b-5ef6-4bdb-900f-25a3dd77498a.apk"
 
 log:
   level: "debug"

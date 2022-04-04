@@ -2,11 +2,13 @@ package mysql
 
 import (
 	"NetLinkOld/models"
+	"fmt"
 )
 
 func GetQuestionDetail(Qid string) (*models.Question, error) {
 	//查库
 	//sql语句
+	fmt.Println(Qid)
 	sqlStr := "select post_id, title , content, username, community_id, create_time from post where post_id=?"
 	que := new(models.Question)
 	//查询

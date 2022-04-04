@@ -32,9 +32,15 @@ func Setup() *gin.Engine {
 	quegroup.POST("/get_question_detail/:id", controler.GetQuestionDetail)
 	quegroup.POST("/get_question_list/:page/:amount", controler.GetQuestionList)
 
+	//评论路由组
 	comgroup := apigroup.Group("/commit")
 	comgroup.POST("/send_commit", middleware.JWTAuthMiddleware(), controler.SendCommit)
 	comgroup.POST("/get_commit/:post_id", controler.GetCommit)
+
+	//版本路由组
+	vergroup := apigroup.Group("/version")
+	vergroup.POST("/get_version", controler.GetVersion)
+	vergroup.POST("/get_apkurl", controler.GetApkUrl)
 	return r
 }
 
