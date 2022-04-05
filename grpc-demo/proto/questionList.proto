@@ -1,10 +1,9 @@
 syntax = "proto3";
 
-option go_package = "./;pb";
+option go_package = "./;proto";
 
 package proto;
 
-import "common.proto";
 
 service QueListService {
   rpc GetQueList (GetQueListRequest) returns (GetQueListReply) {};
@@ -13,15 +12,16 @@ service QueListService {
 message GetQueListRequest {
   string page = 1;
   string amount = 2;
+  int64 ch = 3;
+  string location = 4;
 }
 
 message QueList {
   int64 id = 1;
   string title = 2;
-  string time = 3;
+  string create_time = 3;
 }
 
 message GetQueListReply {
-  repeated QueList list = 1;
-  Pager pager = 2;
+  repeated QueList question_list = 1;
 }

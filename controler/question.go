@@ -59,7 +59,6 @@ func GetQuestionList(c *gin.Context) {
 	}
 	//返回响应
 	c.JSON(http.StatusOK, gin.H{
-
 		"msg":           "ok",
 		"question_list": data,
 	})
