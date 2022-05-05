@@ -27,6 +27,16 @@ func GetQuestionList(page int, amount int, ch *models.QueCh) (data []*models.Que
 	return data, nil
 }
 
+func GetQuestionListById(name string, page int, amount int) (data []*models.QueList, err error) {
+	//查库
+	data, err = mysql.GetQuestionListById(name, page, amount)
+	if err != nil {
+		zap.L().Error("mysql.GetQuestionList(page, amount) err ", zap.Error(err))
+		return nil, err
+	}
+	return data, nil
+}
+
 func SendQuestion(que *models.Question) (err error) {
 	que.ID, err = uuid.Getuuid()
 	err = mysql.SendQuestion(que)
@@ -35,4 +45,13 @@ func SendQuestion(que *models.Question) (err error) {
 		return err
 	}
 	return nil
+}
+
+func SendAudioQue(que *models.Question) (err error) {
+	err = mysql.SendAudioQuestion(que)
+	if err != nil {
+		zap.L().Error("mysql.SendAudioQuestion(que) err:", zap.Error(err))
+		return err
+	}
+	return err
 }

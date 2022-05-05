@@ -11,8 +11,7 @@ func SendCommit(com *models.Commit) error {
 }
 
 func GetCommit(Pid string) (com []*models.Commit, err error) {
-
-	sqls := `select username,content,create_time from commit where post_id = ? order by create_time`
+	sqls := `select id,username,content,create_time from commit where post_id = ? order by create_time`
 	err = db.Select(&com, sqls, Pid)
 	return com, err
 }

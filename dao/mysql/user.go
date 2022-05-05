@@ -45,8 +45,8 @@ func Register(user *models.UserInMysql) (ok bool, err error) {
 	userPassword := encryptPassword(user.Password)
 	user.Password = userPassword
 	//3.数据入库
-	sqlStr := `insert into user (user_id,username,password) values(?,?,?)`
-	_, err = db.Exec(sqlStr, user.UserId, user.Username, user.Password)
+	sqlStr := `insert into user (user_id,username,password,email) values(?,?,?,?)`
+	_, err = db.Exec(sqlStr, user.UserId, user.Username, user.Password, user.Username)
 	if err != nil {
 		return false, err
 	}
@@ -74,6 +74,7 @@ func Login(user *models.UserInMysql) (string, error) {
 }
 
 func GetUserInfo(username string) (userinfo *models.User, err error) {
+	userinfo = new(models.User)
 	sqlStr := `select user_id, username, email from user where username = ?`
 	err = db.Get(userinfo, sqlStr, username)
 	if err != nil {
@@ -81,6 +82,20 @@ func GetUserInfo(username string) (userinfo *models.User, err error) {
 		return nil, err
 	}
 	return userinfo, nil
+}
+
+func GetUsername(id int64) (username string, err error) {
+	sqlStr := `select username from user where user_id = ?`
+	type user struct {
+		Username string `json:"username" db:"username"`
+	}
+	u := new(user)
+	err = db.Get(u, sqlStr, id)
+	if err != nil {
+		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
+		return "nil", err
+	}
+	return u.Username, nil
 }
 
 func PutUserInfo(user *models.User) error {
@@ -98,4 +113,33 @@ func PutUserInfo(user *models.User) error {
 	}
 	zap.L().Debug("update success...", zap.Int64(" affected rows:", n))
 	return nil
+}
+
+func PutUserLocation(UserLocation *models.UserLocation) error {
+	fmt.Println(UserLocation)
+	sqlStr := "update user set location=? where username = ?"
+	ret, err := db.Exec(sqlStr, UserLocation.Location, UserLocation.Username)
+	if err != nil {
+		zap.L().Error("update failed, err:", zap.Error(err))
+		return err
+	}
+	n, err := ret.RowsAffected() // 操作影响的行数
+	if err != nil {
+		zap.L().Error("get RowsAffected failed, err:", zap.Error(err))
+		return err
+	}
+	zap.L().Debug("update success...", zap.Int64(" affected rows:", n))
+	return nil
+}
+
+func GetUserLocation(UserLocation *models.UserLocation) (Location float64, err error) {
+	sqlStr := `select location from user where username = ?`
+
+	err = db.Get(UserLocation, sqlStr, UserLocation.Username)
+	if err != nil {
+		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
+		return 0, err
+	}
+	Location = UserLocation.Location
+	return Location, nil
 }

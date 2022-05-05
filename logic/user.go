@@ -63,3 +63,21 @@ func PutUserInfo(user *models.User) error {
 	}
 	return nil
 }
+
+func PutUserLocation(UserLocation *models.UserLocation) error {
+	//对新的UserInfo进行入库操作
+	err := mysql.PutUserLocation(UserLocation)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetUserLocation(UserLocation *models.UserLocation) (float64, error) {
+	//对新的UserInfo进行入库操作
+	location, err := mysql.GetUserLocation(UserLocation)
+	if err != nil {
+		return 0, err
+	}
+	return location, nil
+}

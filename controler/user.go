@@ -1,12 +1,13 @@
 package controler
 
 import (
+	"NetLinkOld/dao/mysql"
 	"NetLinkOld/logic"
 	"NetLinkOld/models"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 )
 
 func RegisterHandler(c *gin.Context) {
@@ -89,11 +90,33 @@ func GetUserInfo(c *gin.Context) {
 		return
 	}
 	//转换结果为json返回
-	userjson, err := json.Marshal(user)
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  "ok",
-		"info": userjson,
+		"info": user,
+	})
+	return
+}
+
+func GetUserName(c *gin.Context) {
+	//从token获取当前的username
+	userid := c.Param("id")
+	id, err := strconv.ParseInt(userid, 10, 64)
+	//username在logic做获取操作
+	username, err := mysql.GetUsername(id)
+	if err != nil {
+		zap.L().Error("logic.GetUserInfo(username) err..", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	//转换结果为json返回
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "ok",
+		"name": username,
 	})
 	return
 }
@@ -129,6 +152,59 @@ func PutUserInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  "ok",
+	})
+	return
+}
+
+func PutUserLocation(c *gin.Context) {
+	UserLocation := new(models.UserLocation)
+	err := c.ShouldBindJSON(UserLocation)
+	if err != nil {
+		zap.L().Error("GetCurrentUser(UserInfo) err..", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	err = logic.PutUserLocation(UserLocation)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "ok",
+	})
+	return
+}
+
+func GetUserLocation(c *gin.Context) {
+	UserLocation := new(models.UserLocation)
+	err := c.ShouldBindJSON(UserLocation)
+	if err != nil {
+		zap.L().Error("GetCurrentUser(UserInfo) err..", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	location, err := logic.GetUserLocation(UserLocation)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":     200,
+		"msg":      "ok",
+		"location": location,
 	})
 	return
 }

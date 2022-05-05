@@ -1,7 +1,7 @@
 app:
   name: "NetLinkOld"
   mode: "dev"
-  port: 8080
+  port: 8081
   TokenExpireDuration: 720
   version: "1.0.0"
   apkurl: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-a933095d-bea3-4928-8f0f-32b5379c7772/e36ae07b-5ef6-4bdb-900f-25a3dd77498a.apk"
@@ -30,3 +30,5 @@ redis:
   password: ""
   max_pool_size: 200
 
+tmp:
+  audio_path: "D:/Data/GoCode/Upload/temp"

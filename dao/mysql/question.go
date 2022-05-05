@@ -9,7 +9,7 @@ func GetQuestionDetail(Qid string) (*models.Question, error) {
 	//查库
 	//sql语句
 	fmt.Println(Qid)
-	sqlStr := "select post_id, title , content, username, community_id, create_time from post where post_id=?"
+	sqlStr := "select post_id, title , content,audio_path, username, community_id, create_time from post where post_id=?"
 	que := new(models.Question)
 	//查询
 	err := db.Get(que, sqlStr, Qid)
@@ -26,7 +26,7 @@ func GetQuestionList(page int, amount int, ch *models.QueCh) ([]*models.QueList,
 	sqlStr := ``
 	if ch.Ch == 1 {
 		sqlStr = `select
-	post_id, title,create_time 
+	post_id,username, title,create_time 
 	from post
 	where community_id = ? and location like CONCAT('%',?,'%')
     order by create_time desc
@@ -42,7 +42,7 @@ func GetQuestionList(page int, amount int, ch *models.QueCh) ([]*models.QueList,
 		return data, nil
 	} else {
 		sqlStr = `select
-	post_id, title,create_time 
+	post_id,username, title,create_time 
 	from post
     where community_id = ?
     order by create_time desc
@@ -61,6 +61,25 @@ func GetQuestionList(page int, amount int, ch *models.QueCh) ([]*models.QueList,
 
 }
 
+func GetQuestionListById(username string, page int, amount int) ([]*models.QueList, error) {
+	sqlStr := `select
+	post_id,username, title,create_time 
+	from post
+    where username = ?
+    order by create_time desc
+	limit ?,?
+	`
+	var data []*models.QueList
+
+	err := db.Select(&data, sqlStr, username, (page-1)*amount, amount)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+
+}
+
 func SendQuestion(que *models.Question) error {
 	//检查标题
 	sqlstr := `insert into post(
@@ -68,5 +87,15 @@ func SendQuestion(que *models.Question) error {
 	values(?,?,?,?,?,?)
 `
 	_, err := db.Exec(sqlstr, que.ID, que.Title, que.Content, que.UserName, que.CommunityID, que.Location)
+	return err
+}
+
+func SendAudioQuestion(que *models.Question) error {
+	//检查标题
+	sqlstr := `insert into post(
+	post_id,audio_path,username,community_id,location)
+	values(?,?,?,?,?)
+`
+	_, err := db.Exec(sqlstr, que.ID, que.AudioPath, que.UserName, que.CommunityID, que.Location)
 	return err
 }
