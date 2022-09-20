@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterHandler(c *gin.Context) {
@@ -121,6 +122,28 @@ func GetUserName(c *gin.Context) {
 	return
 }
 
+func GetUserNickName(c *gin.Context) {
+	//从token获取当前的username
+	userid := c.Param("username")
+	//username在logic做获取操作
+	user, err := mysql.GetUserInfo(userid)
+	if err != nil {
+		zap.L().Error("logic.GetUserInfo(username) err..", zap.Error(err))
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	//转换结果为json返回
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "ok",
+		"user": user,
+	})
+	return
+}
+
 func PutUserInfo(c *gin.Context) {
 	UserInfo := new(models.User)
 	err := c.ShouldBindJSON(UserInfo)
@@ -140,7 +163,7 @@ func PutUserInfo(c *gin.Context) {
 		})
 		return
 	}
-	UserInfo.Username = name
+	UserInfo.UserId, _ = strconv.ParseInt(name, 10, 64)
 	err = logic.PutUserInfo(UserInfo)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -207,4 +230,48 @@ func GetUserLocation(c *gin.Context) {
 		"location": location,
 	})
 	return
+}
+
+func SetUserOld(c *gin.Context) {
+	var oldId map[string][]string
+	uId := c.Param("id")
+	err := c.ShouldBindJSON(&oldId)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	oldIds := strings.Join(oldId["oldId"], "+")
+	err = mysql.SetOldId(uId, oldIds)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "ok",
+	})
+}
+
+func GetUserOld(c *gin.Context) {
+	id := c.Param("id")
+	oid, err := mysql.GetOldId(id)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	oldId := strings.Split(oid, "+")
+	c.JSON(http.StatusOK, gin.H{
+		"code":  200,
+		"msg":   "ok",
+		"oldId": oldId,
+	})
 }

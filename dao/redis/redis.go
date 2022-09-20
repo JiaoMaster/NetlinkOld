@@ -13,9 +13,9 @@ var rdb *redis.Client
 // 初始化连接
 func Init() (err error) {
 	rdb = redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", viper.GetString("redis.host"), viper.GetInt("radis. port")),
-		Password: viper.GetString("radis.password"),   // no password set
-		DB:       viper.GetInt("radis.max_pool_size"), // use default DB
+		Addr:     fmt.Sprintf("%s:%d", viper.GetString("redis.host"), viper.GetInt("redis.port")),
+		Password: viper.GetString("redis.password"), // no password set
+		DB:       viper.GetInt("redis.db"),          // use default DB
 	})
 
 	_, err = rdb.Ping().Result()

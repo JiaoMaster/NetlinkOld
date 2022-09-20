@@ -16,31 +16,100 @@ func Setup() *gin.Engine {
 		context.String(http.StatusOK, "OK")
 	})
 
-	r.POST("/register", controler.RegisterHandler)
-	r.POST("/login", controler.LoginHandler)
+	//注册登录控制组
+	{
+		r.POST("/register", controler.RegisterHandler)
+		r.POST("/login", controler.LoginHandler)
+	}
 	apigroup := r.Group("/api")
-	//用户路由组
-	usergroup := apigroup.Group("/user")
-	usergroup.Use(middleware.JWTAuthMiddleware())
-	usergroup.POST("/get_user_info", controler.GetUserInfo)
-	usergroup.POST("/put_user_info", controler.PutUserInfo)
+	{
+		//用户路由组
+		usergroup := apigroup.Group("/user")
+		{
+			usergroup.POST("/get_user_NickName/:username", controler.GetUserNickName)
+			usergroup.Use(middleware.JWTAuthMiddleware())
+			usergroup.POST("/get_user_info", controler.GetUserInfo)
+			usergroup.POST("/put_user_info", controler.PutUserInfo)
+			usergroup.POST("/get_user_name/:id", controler.GetUserName)
+			usergroup.POST("/get_user_location", controler.GetUserLocation)
+			usergroup.POST("/put_user_location", controler.PutUserLocation)
+			usergroup.POST("/set_old/:id", controler.SetUserOld)
+			usergroup.POST("/get_old/:id", controler.GetUserOld)
+		}
+		//问题路由组
 
-	//题目路由组
+		quegroup := apigroup.Group("/question")
+		{
+			quegroup.POST("/send_question", middleware.JWTAuthMiddleware(), controler.SendQuestion)
+			quegroup.POST("/get_question_detail/:id", controler.GetQuestionDetail)
+			quegroup.POST("/get_question_list/:page/:amount", controler.GetQuestionList)
+			quegroup.POST("/get_question_by_id/:id/:page/:amount", controler.GetQuestionListById)
+		}
 
-	quegroup := apigroup.Group("/question")
-	quegroup.POST("/send_question", middleware.JWTAuthMiddleware(), controler.SendQuestion)
-	quegroup.POST("/get_question_detail/:id", controler.GetQuestionDetail)
-	quegroup.POST("/get_question_list/:page/:amount", controler.GetQuestionList)
+		//评论路由组
+		comgroup := apigroup.Group("/commit")
+		{
+			comgroup.POST("/send_commit", middleware.JWTAuthMiddleware(), controler.SendCommit)
+			comgroup.POST("/get_commit/:post_id", controler.GetCommit)
+		}
 
-	//评论路由组
-	comgroup := apigroup.Group("/commit")
-	comgroup.POST("/send_commit", middleware.JWTAuthMiddleware(), controler.SendCommit)
-	comgroup.POST("/get_commit/:post_id", controler.GetCommit)
+		//版本路由组
+		vergroup := apigroup.Group("/version")
+		{
+			vergroup.POST("/get_version", controler.GetVersion)
+			vergroup.POST("/get_apkurl", controler.GetApkUrl)
+		}
 
-	//版本路由组
-	vergroup := apigroup.Group("/version")
-	vergroup.POST("/get_version", controler.GetVersion)
-	vergroup.POST("/get_apkurl", controler.GetApkUrl)
+		//通知websocket组
+		nroup := apigroup.Group("/notice")
+		{
+			nroup.GET("/newcommit", controler.NewCommit)
+		}
+
+		//商铺组
+		shop := apigroup.Group("/shop")
+		{
+			shop.POST("/create", controler.CreateShop)
+			shop.POST("/GetList/:page/:amount/:type", controler.GetShopList)
+			shop.POST("/GetDetail/:id", controler.GetShopDetail)
+		}
+
+		//商品组
+		commodity := apigroup.Group("/commodity")
+		{
+			commodity.POST("/create", controler.CreateCommodity)
+			commodity.POST("/GetList/:page/:amount/:type", controler.GetCommodityList)
+			commodity.POST("/GetDetail/:id", controler.GetCommodityDetail)
+		}
+
+		//订单组
+		order := apigroup.Group("/order")
+		{
+			order.Use(middleware.JWTAuthMiddleware())
+			order.POST("/create", controler.CreateOrder)
+			order.POST("/GetList/:page/:amount/:id", controler.GetOrderList)
+			order.POST("/GetDetail/:id", controler.GetOrderDetail)
+			order.POST("/Pay/:id", controler.PayOrder)
+			order.POST("/cancel/:id", controler.CancelOrder)
+			order.POST("/unapply/:id", controler.UnapplyOrder)
+		}
+	}
+
+	r.POST("/upload/:ch/:location", middleware.JWTAuthMiddleware(), controler.SendAudioQue)
+	r.GET("/down", controler.DownloadFileControl)
+
+	// 文件上传组
+	{
+		r.POST("/objects/:filename", func(context *gin.Context) {
+			controler.Handler(context.Writer, context.Request)
+		})
+		r.GET("/objects/:filename", func(context *gin.Context) {
+			controler.Handler(context.Writer, context.Request)
+		})
+		r.DELETE("/objects/:filename", func(context *gin.Context) {
+			controler.Handler(context.Writer, context.Request)
+		})
+	}
 	return r
 }
 

@@ -3,9 +3,11 @@ package controler
 import (
 	"NetLinkOld/logic"
 	"NetLinkOld/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 )
 
 func SendCommit(c *gin.Context) {
@@ -29,7 +31,16 @@ func SendCommit(c *gin.Context) {
 			"err":  err,
 		})
 		return
+
 	}
+	models.NM.S.Lock()
+	if _, ok := models.NM.M[com.ToUserName]; ok {
+
+		models.NM.M[com.ToUserName] = strconv.FormatInt(com.PostId, 10)
+
+		fmt.Println("ok")
+	}
+	models.NM.S.Unlock()
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  "ok",

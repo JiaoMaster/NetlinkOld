@@ -6,7 +6,6 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
-	"fmt"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -18,7 +17,7 @@ func CheckUserExist(UserName string) (bool, error) {
 	sqlStr := `select count(user_id) from user where username = ?`
 	var count int
 	if err := db.Get(&count, sqlStr, UserName); err != nil {
-		fmt.Println(count)
+
 		return false, err
 	}
 	return count > 0, nil
@@ -45,8 +44,8 @@ func Register(user *models.UserInMysql) (ok bool, err error) {
 	userPassword := encryptPassword(user.Password)
 	user.Password = userPassword
 	//3.数据入库
-	sqlStr := `insert into user (user_id,username,password,email) values(?,?,?,?)`
-	_, err = db.Exec(sqlStr, user.UserId, user.Username, user.Password, user.Username)
+	sqlStr := `insert into user (user_id,username,password,email,nickName) values(?,?,?,?,?)`
+	_, err = db.Exec(sqlStr, user.UserId, user.Username, user.Password, user.Username, user.NickName)
 	if err != nil {
 		return false, err
 	}
@@ -75,7 +74,18 @@ func Login(user *models.UserInMysql) (string, error) {
 
 func GetUserInfo(username string) (userinfo *models.User, err error) {
 	userinfo = new(models.User)
-	sqlStr := `select user_id, username, email from user where username = ?`
+	sqlStr := `select user_id, username, email ,nickName from user where user_id = ?`
+	err = db.Get(userinfo, sqlStr, username)
+	if err != nil {
+		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
+		return nil, err
+	}
+	return userinfo, nil
+}
+
+func GetUserNickByUsername(username string) (userinfo *models.User, err error) {
+	userinfo = new(models.User)
+	sqlStr := `select user_id, username, email ,nickName from user where username = ?`
 	err = db.Get(userinfo, sqlStr, username)
 	if err != nil {
 		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
@@ -99,9 +109,9 @@ func GetUsername(id int64) (username string, err error) {
 }
 
 func PutUserInfo(user *models.User) error {
-	fmt.Println(user)
-	sqlStr := "update user set email=? where username = ?"
-	ret, err := db.Exec(sqlStr, user.Email, user.Username)
+
+	sqlStr := "update user set nickName = ? where user_id = ?"
+	ret, err := db.Exec(sqlStr, user.NickName, user.UserId)
 	if err != nil {
 		zap.L().Error("update failed, err:", zap.Error(err))
 		return err
@@ -116,9 +126,9 @@ func PutUserInfo(user *models.User) error {
 }
 
 func PutUserLocation(UserLocation *models.UserLocation) error {
-	fmt.Println(UserLocation)
-	sqlStr := "update user set location=? where username = ?"
-	ret, err := db.Exec(sqlStr, UserLocation.Location, UserLocation.Username)
+
+	sqlStr := "update user set x = ?,y = ? where username = ?"
+	ret, err := db.Exec(sqlStr, UserLocation.X, UserLocation.Y, UserLocation.Username)
 	if err != nil {
 		zap.L().Error("update failed, err:", zap.Error(err))
 		return err
@@ -132,14 +142,26 @@ func PutUserLocation(UserLocation *models.UserLocation) error {
 	return nil
 }
 
-func GetUserLocation(UserLocation *models.UserLocation) (Location float64, err error) {
-	sqlStr := `select location from user where username = ?`
+func GetUserLocation(UserLocation *models.UserLocation) (Location *models.UserLocation, err error) {
+	sqlStr := `select x,y from user where username = ?`
 
 	err = db.Get(UserLocation, sqlStr, UserLocation.Username)
 	if err != nil {
 		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
-		return 0, err
+		return nil, err
 	}
-	Location = UserLocation.Location
 	return Location, nil
+}
+
+func SetOldId(uid string, oldId string) error {
+	sqlStr := "insert into UserToOld(userId, oldId) VALUES (?,?)"
+	_, err := db.Exec(sqlStr, uid, oldId)
+	return err
+}
+
+func GetOldId(uid string) (string, error) {
+	var oldIds string
+	sqlStr := "select oldId from UserToOld where userId = ?"
+	err := db.Get(&oldIds, sqlStr, uid)
+	return oldIds, err
 }

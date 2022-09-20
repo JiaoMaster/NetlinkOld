@@ -1,9 +1,9 @@
 app:
   name: "NetLinkOld"
-  mode: "dev"
-  port: 8081
+  mode: "debug"
+  port: 8080
   TokenExpireDuration: 720
-  version: "1.0.0"
+  version: "2.7"
   apkurl: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-a933095d-bea3-4928-8f0f-32b5379c7772/e36ae07b-5ef6-4bdb-900f-25a3dd77498a.apk"
 
 log:
@@ -15,19 +15,19 @@ log:
 
 
 mysql:
-  host: "127.0.0.1"
+  host: "101.42.237.62"
   port: 3306
-  user: "root"
+  user: "123"
   password: "root1234"
-  dbname: "first"
+  dbname: "123"
   max_open_conns: 20
   max_idel_conns: 10
 
 redis:
-  host: "127.0.0.1"
-  port: "162379"
+  host: "101.42.237.62"
+  port: "6379"
   db: 0
-  password: ""
+  password: "123456"
   max_pool_size: 200
 
 tmp:

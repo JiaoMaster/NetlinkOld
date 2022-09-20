@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	pb "github.com/NetLinkOld/grpc-demo/proto"
 	"time"
 
@@ -34,8 +33,7 @@ func (q *QueListServer) GetQueList(c context.Context, r *pb.GetQueListRequest) (
 	}
 	queList := pb.GetQueListReply{}
 	err = json.Unmarshal(body, &queList)
-	fmt.Println(queList.QuestionList)
-	fmt.Println(&queList)
+
 	if err != nil {
 		return nil, err
 	}

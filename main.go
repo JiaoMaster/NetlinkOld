@@ -2,6 +2,7 @@ package main
 
 import (
 	"NetLinkOld/dao/mysql"
+	"NetLinkOld/dao/redis"
 	"NetLinkOld/logger"
 	"NetLinkOld/routes"
 	"NetLinkOld/settings"
@@ -10,8 +11,6 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
-
-//Go Web开发手脚架
 
 func main() {
 	//1、加载配置
@@ -32,6 +31,13 @@ func main() {
 		return
 	}
 	defer mysql.Close()
+
+	// redis
+	if err := redis.Init(); err != nil {
+		fmt.Printf("redis.Init() err:%v", err)
+		return
+	}
+	defer redis.Close()
 	//4.注册路由
 	r := routes.Setup()
 	//5.启动服务

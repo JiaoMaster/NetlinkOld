@@ -28,6 +28,5 @@ func main() {
 			Location: "中国",
 		},
 	)
-
 	fmt.Println(resp)
 }

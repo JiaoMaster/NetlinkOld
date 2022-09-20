@@ -112,7 +112,7 @@ func GetQuestionListById(c *gin.Context) {
 		zap.L().Error(" GetQuestionList 转化失败", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -121,7 +121,7 @@ func GetQuestionListById(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -141,11 +141,10 @@ func SendAudioQue(c *gin.Context) {
 	que.CommunityID, _ = strconv.ParseInt(ch, 10, 64)
 	que.Location = location
 	que.UserName, err = GetCurrentUser(c)
-	fmt.Println(que)
-	fmt.Println(err)
+
 	// 单个文件
 	file, err := c.FormFile("picFile")
-	fmt.Println(err)
+
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -186,7 +185,7 @@ func DownloadFileControl(c *gin.Context) {
 
 	mp3, err := os.OpenFile(ppath.path, os.O_RDWR, os.ModeTemporary)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(500, gin.H{
 			"code": 404,
 			"msg":  err,
 		})
