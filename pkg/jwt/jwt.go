@@ -14,7 +14,7 @@ type MyClaims struct {
 
 var TokenExpireDuration = time.Hour * 7200
 
-var mySecret = []byte("jiaomaster")
+var mySecret = []byte("")
 
 // GenToken 生成JWT
 func GenToken(userid int64, username string) (string, error) {
