@@ -186,7 +186,7 @@ func PutUserLocation(c *gin.Context) {
 		zap.L().Error("GetCurrentUser(UserInfo) err..", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -194,7 +194,7 @@ func PutUserLocation(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -212,7 +212,7 @@ func GetUserLocation(c *gin.Context) {
 		zap.L().Error("GetCurrentUser(UserInfo) err..", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -220,7 +220,7 @@ func GetUserLocation(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}

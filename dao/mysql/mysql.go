@@ -13,6 +13,7 @@ import (
 )
 
 var db *sqlx.DB
+var Db *sqlx.DB
 
 func Init() (err error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True",
@@ -27,6 +28,7 @@ func Init() (err error) {
 	}
 	db.SetMaxOpenConns(viper.GetInt("mysql.max_open_conns"))
 	db.SetMaxIdleConns(viper.GetInt("mysql.max_idle_conns"))
+	Db = db
 	return
 }
 

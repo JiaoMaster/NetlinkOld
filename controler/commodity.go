@@ -1,12 +1,23 @@
 package controler
 
 import (
+	"NetLinkOld/dao/mysql"
 	"NetLinkOld/logic"
 	"NetLinkOld/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
+
+func GetTypeList(c *gin.Context) {
+	sqlStr := "select id, name, image from commodityType"
+	tL := []*models.CommodityType{}
+	mysql.Db.Select(&tL, sqlStr)
+	c.JSON(http.StatusOK, gin.H{
+		"code":     200,
+		"TypeList": tL,
+	})
+}
 
 func CreateCommodity(c *gin.Context) {
 	com := new(models.Commodity)

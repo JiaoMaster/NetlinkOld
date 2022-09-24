@@ -87,5 +87,6 @@ type OrderDetail struct {
 	Name          string `json:"name,omitempty" db:"name"`                        // 商品名称
 	Cover         string `json:"cover,omitempty" db:"cover"`                      // 封面图片
 	Number        int64  `json:"number" db:"number"`
+	AddressId     int64  `json:"addressId,omitempty" db:"addressId"`
 	UnapplyReason string `json:"unapplyReason,omitempty" db:"unapplyReason"`
 }

@@ -127,8 +127,8 @@ func PutUserInfo(user *models.User) error {
 
 func PutUserLocation(UserLocation *models.UserLocation) error {
 
-	sqlStr := "update user set x = ?,y = ? where username = ?"
-	ret, err := db.Exec(sqlStr, UserLocation.X, UserLocation.Y, UserLocation.Username)
+	sqlStr := "update user set x = ?,y = ? where user_id = ?"
+	ret, err := db.Exec(sqlStr, UserLocation.X, UserLocation.Y, UserLocation.UserId)
 	if err != nil {
 		zap.L().Error("update failed, err:", zap.Error(err))
 		return err
@@ -143,14 +143,14 @@ func PutUserLocation(UserLocation *models.UserLocation) error {
 }
 
 func GetUserLocation(UserLocation *models.UserLocation) (Location *models.UserLocation, err error) {
-	sqlStr := `select x,y from user where username = ?`
+	sqlStr := `select x,y from user where user_id = ?`
 
-	err = db.Get(UserLocation, sqlStr, UserLocation.Username)
+	err = db.Get(UserLocation, sqlStr, UserLocation.UserId)
 	if err != nil {
 		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
 		return nil, err
 	}
-	return Location, nil
+	return UserLocation, nil
 }
 
 func SetOldId(uid string, oldId string) error {

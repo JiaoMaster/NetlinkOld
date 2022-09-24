@@ -14,9 +14,9 @@ type UserSignUp struct {
 }
 
 type UserLocation struct {
-	Username string  `json:"username" db:"username"`
-	X        float64 `json:"x" db:"x"`
-	Y        float64 `json:"y" db:"y"`
+	UserId string  `json:"userId,omitempty" db:"user_id"`
+	X      float64 `json:"x" db:"x"`
+	Y      float64 `json:"y" db:"y"`
 }
 
 type UserInMysql struct {

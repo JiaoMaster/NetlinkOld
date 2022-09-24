@@ -78,6 +78,7 @@ func Setup() *gin.Engine {
 		commodity := apigroup.Group("/commodity")
 		{
 			commodity.POST("/create", controler.CreateCommodity)
+			commodity.POST("/GetTypeList", controler.GetTypeList)
 			commodity.POST("/GetList/:page/:amount/:type", controler.GetCommodityList)
 			commodity.POST("/GetDetail/:id", controler.GetCommodityDetail)
 		}
@@ -92,6 +93,16 @@ func Setup() *gin.Engine {
 			order.POST("/Pay/:id", controler.PayOrder)
 			order.POST("/cancel/:id", controler.CancelOrder)
 			order.POST("/unapply/:id", controler.UnapplyOrder)
+		}
+		//address
+		ad := apigroup.Group("/address")
+		{
+			ad.Use(middleware.JWTAuthMiddleware())
+			ad.POST("/add/:uid", controler.AddAd)
+			ad.POST("/del/:id", controler.DelAd)
+			ad.POST("/update/:id", controler.UpDateAd)
+			ad.POST("/get/:id", controler.GetAd)
+			ad.POST("/getList/:uid", controler.GetAdList)
 		}
 	}
 
