@@ -74,9 +74,10 @@ func Login(user *models.UserInMysql) (string, error) {
 
 func GetUserInfo(username string) (userinfo *models.User, err error) {
 	userinfo = new(models.User)
-	sqlStr := `select user_id, username, email ,nickName from user where user_id = ?`
+	sqlStr := `select user_id, username, email ,nickName,haveShop from user where username = ?`
 	err = db.Get(userinfo, sqlStr, username)
 	if err != nil {
+
 		zap.L().Error("db.Get(userinfo,sqlStr,username) err", zap.Error(err))
 		return nil, err
 	}
@@ -125,10 +126,10 @@ func PutUserInfo(user *models.User) error {
 	return nil
 }
 
-func PutUserLocation(UserLocation *models.UserLocation) error {
+func PutUserLocation(UserLocation *models.UserLocation, id string) error {
 
-	sqlStr := "update user set x = ?,y = ? where user_id = ?"
-	ret, err := db.Exec(sqlStr, UserLocation.X, UserLocation.Y, UserLocation.UserId)
+	sqlStr := "update user set x = ?,y = ?,location = ? where user_id = ?"
+	ret, err := db.Exec(sqlStr, UserLocation.X, UserLocation.Y, UserLocation.Location, id)
 	if err != nil {
 		zap.L().Error("update failed, err:", zap.Error(err))
 		return err
@@ -143,7 +144,7 @@ func PutUserLocation(UserLocation *models.UserLocation) error {
 }
 
 func GetUserLocation(UserLocation *models.UserLocation) (Location *models.UserLocation, err error) {
-	sqlStr := `select x,y from user where user_id = ?`
+	sqlStr := `select x,y,location from user where user_id = ?`
 
 	err = db.Get(UserLocation, sqlStr, UserLocation.UserId)
 	if err != nil {
@@ -154,7 +155,15 @@ func GetUserLocation(UserLocation *models.UserLocation) (Location *models.UserLo
 }
 
 func SetOldId(uid string, oldId string) error {
+	sqlStr1 := "select oldId from UserToOld where userId = ?"
+	oid := ""
 	sqlStr := "insert into UserToOld(userId, oldId) VALUES (?,?)"
+	_ = db.Get(&oid, sqlStr1, uid)
+	if oid != "" {
+		sqlStr := "update UserToOld set oldId = ? where userId = ?"
+		_, err := db.Exec(sqlStr, oldId, uid)
+		return err
+	}
 	_, err := db.Exec(sqlStr, uid, oldId)
 	return err
 }
@@ -164,4 +173,31 @@ func GetOldId(uid string) (string, error) {
 	sqlStr := "select oldId from UserToOld where userId = ?"
 	err := db.Get(&oldIds, sqlStr, uid)
 	return oldIds, err
+}
+
+func GetUserIdByOld(oid string) (string, error) {
+	var uid string
+	sqlStr := "select userId from UserToOld where oldId like concat('%',?,'%')"
+	err := db.Get(&uid, sqlStr, oid)
+	return uid, err
+}
+
+func GetOldByUserId(uid string) (string, error) {
+	var oid string
+	sqlStr := "select oldId from UserToOld where  userId = ?"
+	err := db.Get(&oid, sqlStr, uid)
+	return oid, err
+}
+
+func InsertShopToUser(userId string, shopId string) error {
+	sqlStr := "insert into userToShop(shopId, userId) VALUES (?,?)"
+	_, err := db.Exec(sqlStr, shopId, userId)
+	return err
+}
+
+func GetUTS(userId string) (string, error) {
+	var shopId string
+	sqlStr := "select shopId from userToShop where userId = ?"
+	err := db.Get(&shopId, sqlStr, userId)
+	return shopId, err
 }

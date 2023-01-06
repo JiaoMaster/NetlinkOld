@@ -11,6 +11,7 @@ type Question struct {
 	Content     string    `json:"content" db:"content"`                                     // 帖子内容
 	Location    string    `json:"location" db:"location" binding:"required"`
 	AudioPath   string    `json:"audio_path" db:"audio_path"`
+	AuthId      string    `json:"authId,omitempty" db:"author_id"`
 	ImageList   string    `json:"image_list" db:"image_list"`
 	CreateTime  time.Time `json:"create_time" db:"create_time"`
 }

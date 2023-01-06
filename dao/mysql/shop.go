@@ -5,10 +5,11 @@ import (
 	"strconv"
 )
 
-func InsertShop(shop *models.Shop) error {
+func InsertShop(shop *models.Shop) (int64, error) {
 	sqlStr := "insert into shop(typeId, name, image, Introduction) values (:typeId,:name,:image,:Introduction)"
-	_, err := db.Exec(sqlStr, shop.TypeId, shop.Name, shop.Image, shop.Introduction)
-	return err
+	re, err := db.Exec(sqlStr, shop.TypeId, shop.Name, shop.Image, shop.Introduction)
+	id, _ := re.LastInsertId()
+	return id, err
 }
 
 func QueShopList(page string, amount string, typeid string) ([]*models.ShopList, error) {

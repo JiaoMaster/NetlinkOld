@@ -72,6 +72,7 @@ type OrderList struct {
 	Name          string `json:"name,omitempty" db:"name"`                        // 商品名称
 	Cover         string `json:"cover,omitempty" db:"cover"`
 	Number        int64  `json:"number" db:"number"`
+	Flag          bool   `json:"flag" default:"false" db:"flag"`
 	UnapplyReason string `json:"unapplyReason,omitempty" db:"unapplyReason"`
 }
 
@@ -81,7 +82,7 @@ type OrderDetail struct {
 	PayUserId     int64  `json:"payUserId,omitempty,string" db:"payUserId"`       // 支付家属id
 	CommodityId   int64  `json:"commodityId,omitempty,string" db:"commodityId"`   // 商品id
 	PayType       int8   `json:"payType" db:"payType"`                            // 支付类型 1：银行卡 2 ：支付宝 3：微信
-	IfApply       int8   `json:"ifApply" db:"ifApply"`                            // 是否同意 0：未确定 1：不同意 3：已同意
+	IfApply       int8   `json:"ifApply" db:"ifApply"`                            // 是否同意 0：未确定 1：不同意 2：已同意
 	IfPay         int8   `json:"ifPay" db:"ifPay"`                                // 支付状态 0：未支付 1：已支付
 	Amount        int64  `json:"amount" db:"amount"`                              // 支付金额
 	Name          string `json:"name,omitempty" db:"name"`                        // 商品名称

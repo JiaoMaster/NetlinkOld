@@ -75,11 +75,11 @@ func SendQuestion(c *gin.Context) {
 	que := new(models.Question)
 	var err error
 	err = c.ShouldBindJSON(&que)
-	que.UserName, err = GetCurrentUser(c)
+	que.UserName, err = GetCurrentUserName(c)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -140,7 +140,7 @@ func SendAudioQue(c *gin.Context) {
 	location := c.Param("location")
 	que.CommunityID, _ = strconv.ParseInt(ch, 10, 64)
 	que.Location = location
-	que.UserName, err = GetCurrentUser(c)
+	que.UserName, err = GetCurrentUserName(c)
 
 	// 单个文件
 	file, err := c.FormFile("picFile")

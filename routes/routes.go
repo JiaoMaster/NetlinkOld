@@ -33,8 +33,12 @@ func Setup() *gin.Engine {
 			usergroup.POST("/get_user_name/:id", controler.GetUserName)
 			usergroup.POST("/get_user_location", controler.GetUserLocation)
 			usergroup.POST("/put_user_location", controler.PutUserLocation)
-			usergroup.POST("/set_old/:id", controler.SetUserOld)
-			usergroup.POST("/get_old/:id", controler.GetUserOld)
+			usergroup.POST("/set_old", controler.SetUserOld)
+			usergroup.POST("/get_old", controler.GetUserOld)
+			usergroup.POST("/createUTS/:shopId", controler.CreateUTS)
+			usergroup.POST("/getUTS", controler.GetUTS)
+			usergroup.POST("/getUidByOld", controler.GetUserByOld)
+			usergroup.POST("/getOldByUid", controler.GetOldByUser)
 		}
 		//问题路由组
 
@@ -69,6 +73,7 @@ func Setup() *gin.Engine {
 		//商铺组
 		shop := apigroup.Group("/shop")
 		{
+			shop.POST("/TypeList", controler.GetShopTypeList)
 			shop.POST("/create", controler.CreateShop)
 			shop.POST("/GetList/:page/:amount/:type", controler.GetShopList)
 			shop.POST("/GetDetail/:id", controler.GetShopDetail)
@@ -89,8 +94,10 @@ func Setup() *gin.Engine {
 			order.Use(middleware.JWTAuthMiddleware())
 			order.POST("/create", controler.CreateOrder)
 			order.POST("/GetList/:page/:amount/:id", controler.GetOrderList)
+			order.POST("/GetListByOld/:page/:amount", controler.GetOrderListByOld)
 			order.POST("/GetDetail/:id", controler.GetOrderDetail)
-			order.POST("/Pay/:id", controler.PayOrder)
+			order.POST("/Pay/:id/:adId", controler.PayOrder)
+			order.POST("/PayAllOrder/:adId", controler.PayAllOrder)
 			order.POST("/cancel/:id", controler.CancelOrder)
 			order.POST("/unapply/:id", controler.UnapplyOrder)
 		}

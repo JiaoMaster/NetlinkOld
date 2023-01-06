@@ -5,9 +5,9 @@ import (
 	"NetLinkOld/models"
 )
 
-func CreateShop(shop *models.Shop) error {
-	err := mysql.InsertShop(shop)
-	return err
+func CreateShop(shop *models.Shop) (int64, error) {
+	id, err := mysql.InsertShop(shop)
+	return id, err
 }
 
 func GetShopList(page string, amount string, typeid string) ([]*models.ShopList, error) {

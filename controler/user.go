@@ -71,7 +71,7 @@ func LoginHandler(c *gin.Context) {
 
 func GetUserInfo(c *gin.Context) {
 	//从token获取当前的username
-	username, err := GetCurrentUser(c)
+	username, err := GetCurrentUserName(c)
 	if err != nil {
 		zap.L().Error("GetCurrentUser(c) err..", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
@@ -181,7 +181,8 @@ func PutUserInfo(c *gin.Context) {
 
 func PutUserLocation(c *gin.Context) {
 	UserLocation := new(models.UserLocation)
-	err := c.ShouldBindJSON(UserLocation)
+	id, err := GetCurrentUser(c)
+	err = c.ShouldBindJSON(UserLocation)
 	if err != nil {
 		zap.L().Error("GetCurrentUser(UserInfo) err..", zap.Error(err))
 		c.JSON(http.StatusOK, gin.H{
@@ -190,7 +191,7 @@ func PutUserLocation(c *gin.Context) {
 		})
 		return
 	}
-	err = logic.PutUserLocation(UserLocation)
+	err = logic.PutUserLocation(UserLocation, id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -234,8 +235,8 @@ func GetUserLocation(c *gin.Context) {
 
 func SetUserOld(c *gin.Context) {
 	var oldId map[string][]string
-	uId := c.Param("id")
-	err := c.ShouldBindJSON(&oldId)
+	uId, err := GetCurrentUser(c)
+	err = c.ShouldBindJSON(&oldId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -259,7 +260,7 @@ func SetUserOld(c *gin.Context) {
 }
 
 func GetUserOld(c *gin.Context) {
-	id := c.Param("id")
+	id, err := GetCurrentUser(c)
 	oid, err := mysql.GetOldId(id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -273,5 +274,100 @@ func GetUserOld(c *gin.Context) {
 		"code":  200,
 		"msg":   "ok",
 		"oldId": oldId,
+	})
+}
+
+func CreateUTS(c *gin.Context) {
+	sid := c.Param("shopId")
+	uid, ok := c.Get("UserId")
+	uidInt := uid.(int64)
+	UidS := strconv.FormatInt(uidInt, 10)
+	if !ok {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  "err user",
+		})
+		return
+	}
+	err := logic.CreateUserToShop(UidS, sid)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "ok",
+	})
+}
+
+func GetUTS(c *gin.Context) {
+	id, err := GetCurrentUser(c)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	sid, err := logic.GetUTS(id)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":   200,
+		"shopId": sid,
+	})
+}
+
+func GetUserByOld(c *gin.Context) {
+	oid, err := GetCurrentUser(c)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	uid, err := logic.GetUserByOld(oid)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":   200,
+		"userId": uid,
+	})
+}
+
+func GetOldByUser(c *gin.Context) {
+	uid, err := GetCurrentUser(c)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	oid, err := logic.GetOldByUser(uid)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 404,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":  200,
+		"oldId": oid,
 	})
 }

@@ -68,9 +68,9 @@ func PutUserInfo(user *models.User) error {
 	return nil
 }
 
-func PutUserLocation(UserLocation *models.UserLocation) error {
+func PutUserLocation(UserLocation *models.UserLocation, id string) error {
 	//对新的UserInfo进行入库操作
-	err := mysql.PutUserLocation(UserLocation)
+	err := mysql.PutUserLocation(UserLocation, id)
 	if err != nil {
 		return err
 	}
@@ -84,6 +84,20 @@ func GetUserLocation(UserLocation *models.UserLocation) (*models.UserLocation, e
 		return nil, err
 	}
 	return location, nil
+}
+
+func CreateUserToShop(userId string, shopId string) error {
+	return mysql.InsertShopToUser(userId, shopId)
+}
+func GetUTS(userId string) (string, error) {
+	return mysql.GetUTS(userId)
+}
+
+func GetUserByOld(oldId string) (string, error) {
+	return mysql.GetUserIdByOld(oldId)
+}
+func GetOldByUser(userId string) (string, error) {
+	return mysql.GetOldByUserId(userId)
 }
 
 var lastName = []string{

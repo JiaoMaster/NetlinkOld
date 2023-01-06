@@ -1,12 +1,23 @@
 package controler
 
 import (
+	"NetLinkOld/dao/mysql"
 	"NetLinkOld/logic"
 	"NetLinkOld/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
+
+func GetShopTypeList(c *gin.Context) {
+	sqlStr := "select id, name, image from shop"
+	tL := []*models.ShopType{}
+	mysql.Db.Select(&tL, sqlStr)
+	c.JSON(http.StatusOK, gin.H{
+		"code":     200,
+		"TypeList": tL,
+	})
+}
 
 func CreateShop(c *gin.Context) {
 	shop := new(models.Shop)
@@ -18,7 +29,7 @@ func CreateShop(c *gin.Context) {
 		})
 		return
 	}
-	err = logic.CreateShop(shop)
+	id, err := logic.CreateShop(shop)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 404,
@@ -29,6 +40,7 @@ func CreateShop(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  "ok",
+		"data": id,
 	})
 }
 

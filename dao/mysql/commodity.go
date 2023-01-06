@@ -12,7 +12,7 @@ func InsertCom(com *models.Commodity) error {
 }
 
 func QueComList(page string, amount string, typeid string) ([]*models.Commodity, error) {
-	sqlStr := "select typeId, name, cover, introduction, sold, score, amount from commodity where typeId = ? order by id limit ?,?"
+	sqlStr := "select typeId, name, cover, introduction, sold, score, amount, id from commodity where typeId = ? order by id limit ?,?"
 	re := []*models.Commodity{}
 	p, _ := strconv.ParseInt(page, 10, 64)
 	a, _ := strconv.ParseInt(amount, 10, 64)

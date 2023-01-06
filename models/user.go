@@ -6,6 +6,7 @@ type User struct {
 	Password string `json:"password" db:"password"`
 	Email    string `json:"email" db:"email"`
 	NickName string `json:"nickName" db:"nickName"`
+	Have     int8   `json:"haveShop" db:"haveShop"`
 }
 
 type UserSignUp struct {
@@ -14,9 +15,10 @@ type UserSignUp struct {
 }
 
 type UserLocation struct {
-	UserId string  `json:"userId,omitempty" db:"user_id"`
-	X      float64 `json:"x" db:"x"`
-	Y      float64 `json:"y" db:"y"`
+	UserId   string  `json:"userId,omitempty" db:"user_id"`
+	X        float64 `json:"x" db:"x"`
+	Y        float64 `json:"y" db:"y"`
+	Location string  `json:"location" db:"location"`
 }
 
 type UserInMysql struct {
